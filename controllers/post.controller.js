@@ -1,18 +1,15 @@
-import Post from "../models/post.model";
+import Post from "../models/post.model.js";
 
 // Get all posts
 const getAllPosts = async (req, res) => {
   try {
     const posts = await Post.findAll();
     res.json({
-      success: true,
-      data: posts,
       message: "Fetch all posts successfully",
+      data: posts,
     });
   } catch (error) {
-    res
-      .statusCode(500)
-      .json({ success: false, error: "Internal server error" });
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -21,15 +18,11 @@ const getPostById = async (req, res) => {
   try {
     const post = await Post.findByPk(req.params.id);
     if (!post) {
-      return res
-        .statusCode(404)
-        .json({ success: false, error: "Post not found" });
+      return res.status(404).json({ error: "Post not found" });
     }
-    res.json({ success: true, data: post, message: "Fetch post successfully" });
+    res.json({ message: "Fetch post successfully", data: post });
   } catch (error) {
-    res
-      .statusCode(500)
-      .json({ success: false, error: "Internal server error" });
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -38,14 +31,11 @@ const createPost = async (req, res) => {
   try {
     const post = await Post.create(req.body);
     res.status(201).json({
-      success: true,
-      data: post,
       message: "Created post successfully",
+      data: post,
     });
   } catch (error) {
-    res
-      .statusCode(500)
-      .json({ success: false, error: "Internal server error" });
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -53,10 +43,8 @@ const createPost = async (req, res) => {
 const updatePost = async (req, res) => {
   try {
     const existingPost = await Post.findByPk(req.params.id);
-    if (!post) {
-      return res
-        .statusCode(404)
-        .json({ success: false, error: "Post not found" });
+    if (!existingPost) {
+      return res.status(404).json({ error: "Post not found" });
     }
     const updatedPost = await Post.update(req.body, {
       where: {
@@ -64,14 +52,11 @@ const updatePost = async (req, res) => {
       },
     });
     res.json({
-      success: true,
-      data: updatedPost,
       message: "Created post successfully",
+      data: updatedPost,
     });
   } catch (error) {
-    res
-      .statusCode(500)
-      .json({ success: false, error: "Internal server error" });
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -80,9 +65,7 @@ const deletePost = async (req, res) => {
   try {
     const post = await Post.findByPk(req.params.id);
     if (!post) {
-      return res
-        .statusCode(404)
-        .json({ success: false, error: "Post not found" });
+      return res.status(404).json({ error: "Post not found" });
     }
     await Post.destroy({
       where: {
@@ -90,20 +73,11 @@ const deletePost = async (req, res) => {
       },
     });
     res.json({
-      success: true,
       message: "Post deleted successfully",
     });
   } catch (error) {
-    res
-      .statusCode(500)
-      .json({ success: false, error: "Internal server error" });
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
-export default {
-  getAllPosts,
-  getPostById,
-  createPost,
-  updatePost,
-  deletePost,
-};
+export { getAllPosts, getPostById, createPost, updatePost, deletePost };
