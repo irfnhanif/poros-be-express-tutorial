@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "poros-be-tutorial",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
