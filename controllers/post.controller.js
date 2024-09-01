@@ -1,3 +1,4 @@
+import Joi from "joi";
 import Post from "../models/post.model.js";
 
 // Get all posts
@@ -29,6 +30,10 @@ const getPostById = async (req, res) => {
 // Create a new post
 const createPost = async (req, res) => {
   try {
+    const { isValid, error } = validatePost(req.body);
+    if (!isValid) {
+      return res.status(400).json({ error });
+    }
     const post = await Post.create(req.body);
     res.status(201).json({
       message: "Created post successfully",
@@ -46,13 +51,17 @@ const updatePost = async (req, res) => {
     if (!existingPost) {
       return res.status(404).json({ error: "Post not found" });
     }
+    const { isValid, error } = validatePost(req.body);
+    if (!isValid) {
+      return res.status(400).json({ error });
+    }
     const updatedPost = await Post.update(req.body, {
       where: {
         id: req.params.id,
       },
     });
     res.json({
-      message: "Created post successfully",
+      message: "Updated post successfully",
       data: updatedPost,
     });
   } catch (error) {
@@ -77,6 +86,27 @@ const deletePost = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const validatePost = (requestBody) => {
+  const postValidationSchema = Joi.object({
+    title: Joi.string().required(),
+    content: Joi.string().required(),
+    category: Joi.string().required(),
+  });
+
+  const { error } = postValidationSchema.validate(requestBody, {
+    abortEarly: false,
+  });
+
+  if (error) {
+    return {
+      isValid: false,
+      error: error.details.map((detail) => detail.message).join(", "),
+    };
+  } else {
+    return { isValid: true, error: null };
   }
 };
 
