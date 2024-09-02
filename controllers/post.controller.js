@@ -4,7 +4,12 @@ import Post from "../models/post.model.js";
 // Get all posts
 const getAllPosts = async (req, res) => {
   try {
-    const posts = await Post.findAll();
+    const limit = req.query.limit;
+    const offset = req.query.offset;
+    const posts = await Post.findAll({ limit: limit, offset: offset });
+    if (!posts) {
+      return res.status(404).json({ error: "Post not found" });
+    }
     res.json({
       message: "Fetch all posts successfully",
       data: posts,
